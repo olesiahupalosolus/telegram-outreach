@@ -8,6 +8,11 @@ sessions/
 # Real account credentials — NEVER commit
 accounts.json
 
+# Local SQLite DB (used as fallback when DATABASE_URL not set)
+app.db
+*.sqlite
+*.sqlite3
+
 # Environment variables
 .env
 .env.local
