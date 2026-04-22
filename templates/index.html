@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telegram Outreach</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+
+  .header { background: linear-gradient(135deg, #2b5ce6, #1a3fa0); color: white; padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-icon { font-size: 28px; }
+  .header h1 { font-size: 20px; font-weight: 700; }
+  .header p { font-size: 13px; opacity: 0.8; margin-top: 2px; }
+  .session-badge { background: rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 12px; font-size: 12px; }
+  .session-badge span { opacity: 0.7; }
+  .session-badge strong { font-family: monospace; }
+
+  .container { max-width: 880px; margin: 0 auto; padding: 28px 20px; }
+
+  .card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+  .card-title { font-size: 15px; font-weight: 700; margin-bottom: 18px; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #555; }
+  input, select { width: 100%; padding: 10px 14px; border: 1.5px solid #e0e4ee; border-radius: 10px; font-size: 14px; outline: none; transition: border 0.2s; background: #fafbff; }
+  input:focus, select:focus { border-color: #2b5ce6; background: white; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { margin-bottom: 14px; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: #2b5ce6; color: white; }
+  .btn-primary:hover { background: #1a3fa0; transform: translateY(-1px); }
+  .btn-secondary { background: #f0f2f5; color: #555; }
+  .btn-secondary:hover { background: #e2e5ec; }
+  .btn-danger { background: #ff4757; color: white; }
+  .btn-danger:hover { background: #d63031; }
+  .btn-success { background: #00b894; color: white; }
+  .btn-success:hover { background: #009874; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+  .btn-sm { padding: 7px 14px; font-size: 12px; }
+
+  .account-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; min-height: 36px; }
+  .account-tag { display: inline-flex; align-items: center; gap: 8px; background: #eef2ff; border: 1.5px solid #c7d2fe; border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 600; color: #3730a3; }
+  .account-tag .del { cursor: pointer; color: #aaa; font-size: 18px; line-height: 1; margin-left: 2px; }
+  .account-tag .del:hover { color: #ff4757; }
+  .account-dot { width: 8px; height: 8px; background: #00b894; border-radius: 50%; flex-shrink: 0; }
+
+  .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #2b5ce6; color: white; border-radius: 50%; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+
+  .preview-table-wrap { overflow-x: auto; margin-top: 12px; }
+  .preview-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .preview-table th { background: #f5f7ff; padding: 9px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e4ee; white-space: nowrap; }
+  .preview-table td { padding: 8px 12px; border-bottom: 1px solid #f0f2f5; color: #333; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .preview-table tr:hover td { background: #fafbff; }
+
+  .progress-wrap { margin-top: 16px; }
+  .progress-bar-bg { height: 10px; background: #e0e4ee; border-radius: 99px; overflow: hidden; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, #2b5ce6, #00b894); border-radius: 99px; transition: width 0.5s ease; }
+  .progress-info { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-top: 6px; }
+
+  .alert { padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-top: 12px; }
+  .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+  .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+  .alert-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+  .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+  .error-list { max-height: 120px; overflow-y: auto; margin-top: 8px; }
+  .error-item { font-size: 12px; color: #991b1b; padding: 3px 0; border-bottom: 1px solid #fecaca; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 430px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); margin: 20px; }
+  .modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 18px; }
+
+  .divider { height: 1px; background: #f0f2f5; margin: 20px 0; }
+  .text-muted { color: #999; font-size: 12px; }
+  .mt-2 { margin-top: 8px; }
+  .hidden { display: none !important; }
+  .send-current { font-size: 13px; color: #2b5ce6; font-weight: 500; margin-top: 8px; min-height: 20px; }
+  .badge { display: inline-block; background: #eef2ff; color: #3730a3; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+
+  .multi-hint { background: #f5f7ff; border: 1.5px dashed #c7d2fe; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #3730a3; margin-bottom: 20px; }
+  .multi-hint strong { display: block; margin-bottom: 4px; }
+
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .container { padding: 16px 12px; }
+    .header { padding: 16px; flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-icon">✈️</div>
+    <div>
+      <h1>Telegram Outreach</h1>
+      <p>Автоматична розсилка через особистий акаунт</p>
+    </div>
+  </div>
+  <div class="session-badge">
+    <span>Вкладка: </span><strong id="sessionDisplay"></strong>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="multi-hint">
+    <strong>💡 Паралельні розсилки</strong>
+    Відкрий цей сайт у декількох вкладках браузера — кожна вкладка працює незалежно і може запустити свою розсилку з різних акаунтів одночасно.
+  </div>
+
+  <!-- STEP 1: Accounts -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">1</span> Telegram акаунти</div>
+    <div class="account-list" id="accountList">
+      {% for acc in accounts %}
+      <div class="account-tag" id="tag-{{ acc }}">
+        <span class="account-dot"></span>{{ acc }}
+        <span class="del" onclick="deleteAccount('{{ acc }}')">×</span>
+      </div>
+      {% endfor %}
+      {% if not accounts %}
+      <span class="text-muted" id="noAccounts">Поки що немає акаунтів — додайте нижче</span>
+      {% endif %}
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="openModal()">+ Додати акаунт</button>
+  </div>
+
+  <!-- STEP 2: Sheet -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">2</span> Google Sheet</div>
+    <div class="form-group">
+      <label>Посилання на таблицю</label>
+      <div style="display:flex;gap:10px">
+        <input type="text" id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/..." style="flex:1">
+        <button class="btn btn-primary" id="loadBtn" onclick="loadPreview()">Завантажити</button>
+      </div>
+      <div class="text-muted mt-2">⚠️ Таблиця має бути відкрита: Файл → Спільний доступ → Хто має посилання: Переглядач</div>
+    </div>
+    <div id="previewSection" class="hidden">
+      <div class="divider"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Колонка з @username</label>
+          <select id="usernameCol"></select>
+        </div>
+        <div class="form-group">
+          <label>Колонка з повідомленням</label>
+          <select id="messageCol"></select>
+        </div>
+      </div>
+      <div class="preview-table-wrap" id="previewTable"></div>
+      <div class="text-muted mt-2" id="totalCount"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Launch -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">3</span> Налаштування та запуск</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Акаунт для відправки</label>
+        <select id="accountSelect">
+          <option value="">— виберіть акаунт —</option>
+          {% for acc in accounts %}
+          <option value="{{ acc }}">{{ acc }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Затримка між повідомленнями (сек)</label>
+        <input type="number" id="delay" value="20" min="10" max="120">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-success" id="sendBtn" onclick="startSend()">🚀 Запустити розсилку</button>
+      <button class="btn btn-danger hidden" id="stopBtn" onclick="stopSend()">⏹ Зупинити</button>
+      <span id="runningBadge" class="badge badge-green hidden">● Активна розсилка</span>
+    </div>
+
+    <div id="progressSection" class="hidden progress-wrap">
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-weight:700;font-size:14px">Прогрес розсилки</span>
+        <span class="badge" id="progressBadge">0 / 0</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar" id="progressBar" style="width:0%"></div>
+      </div>
+      <div class="send-current" id="sendCurrent"></div>
+      <div id="errorBlock" class="hidden">
+        <div style="font-size:13px;font-weight:700;color:#991b1b;margin-top:14px;margin-bottom:4px">⚠️ Помилки:</div>
+        <div class="error-list" id="errorItems"></div>
+      </div>
+    </div>
+
+    <div id="doneAlert" class="hidden"></div>
+  </div>
+
+</div>
+
+<!-- Modal: Add Account -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>➕ Додати Telegram акаунт</h3>
+
+    <div id="authStep1">
+      <div class="form-group">
+        <label>Назва акаунта (будь-яка)</label>
+        <input type="text" id="accName" placeholder="Мій акаунт 1">
+      </div>
+      <div class="form-group">
+        <label>API ID <span class="text-muted">(з my.telegram.org)</span></label>
+        <input type="text" id="accApiId" placeholder="12345678">
+      </div>
+      <div class="form-group">
+        <label>API Hash</label>
+        <input type="text" id="accApiHash" placeholder="a1b2c3d4...">
+      </div>
+      <div class="form-group">
+        <label>Номер телефону</label>
+        <input type="text" id="accPhone" placeholder="+380501234567">
+      </div>
+      <div id="authMsg"></div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-primary" id="sendCodeBtn" onclick="sendCode()">Надіслати код</button>
+        <button class="btn btn-secondary" onclick="closeModal()">Скасувати</button>
+      </div>
+    </div>
+
+    <div id="authStep2" class="hidden">
+      <div class="alert alert-info">✅ Код надіслано на ваш Telegram</div>
+      <div class="form-group mt-2">
+        <label>Код з Telegram</label>
+        <input type="text" id="accCode" placeholder="12345" maxlength="10" autofocus>
+      </div>
+      <div id="passwordField" class="form-group hidden">
+        <label>Пароль двофакторної авторизації (2FA)</label>
+        <input type="password" id="accPassword" placeholder="Ваш пароль">
+      </div>
+      <div id="verifyMsg"></div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="btn btn-primary" id="verifyBtn" onclick="verifyCode()">Підтвердити</button>
+        <button class="btn btn-secondary" onclick="closeModal()">Скасувати</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Each browser tab gets its own unique session ID
+const SESSION_ID = crypto.randomUUID();
+document.getElementById('sessionDisplay').textContent = SESSION_ID.slice(0, 8);
+
+let statusInterval = null;
+let currentAccName = '';
+
+// ─── Account Modal ──────────────────────────────────────────────────────────────
+
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('active');
+  document.getElementById('authStep1').classList.remove('hidden');
+  document.getElementById('authStep2').classList.add('hidden');
+  document.getElementById('authMsg').innerHTML = '';
+  ['accName','accApiId','accApiHash','accPhone'].forEach(id => document.getElementById(id).value = '');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+async function sendCode() {
+  const name = document.getElementById('accName').value.trim();
+  const api_id = document.getElementById('accApiId').value.trim();
+  const api_hash = document.getElementById('accApiHash').value.trim();
+  const phone = document.getElementById('accPhone').value.trim();
+  const msg = document.getElementById('authMsg');
+
+  if (!name || !api_id || !api_hash || !phone) {
+    msg.innerHTML = '<div class="alert alert-error">Заповніть усі поля</div>';
+    return;
+  }
+
+  const btn = document.getElementById('sendCodeBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Надсилаємо...';
+  msg.innerHTML = '';
+  currentAccName = name;
+
+  const res = await fetch('/accounts/add/start', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name, api_id, api_hash, phone})
+  }).then(r => r.json()).catch(() => ({success: false, error: 'Помилка з\'єднання'}));
+
+  btn.disabled = false;
+  btn.textContent = 'Надіслати код';
+
+  if (res.success) {
+    document.getElementById('authStep1').classList.add('hidden');
+    document.getElementById('authStep2').classList.remove('hidden');
+  } else {
+    msg.innerHTML = `<div class="alert alert-error">❌ ${res.error}</div>`;
+  }
+}
+
+async function verifyCode() {
+  const code = document.getElementById('accCode').value.trim();
+  const password = document.getElementById('accPassword').value.trim();
+  const msg = document.getElementById('verifyMsg');
+  const btn = document.getElementById('verifyBtn');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Перевіряємо...';
+
+  const res = await fetch('/accounts/add/verify', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name: currentAccName, code, password})
+  }).then(r => r.json()).catch(() => ({success: false, error: 'Помилка з\'єднання'}));
+
+  btn.disabled = false;
+  btn.textContent = 'Підтвердити';
+
+  if (res.success) {
+    closeModal();
+    addAccountToUI(currentAccName);
+  } else if (res.need_password) {
+    document.getElementById('passwordField').classList.remove('hidden');
+    msg.innerHTML = '<div class="alert alert-warning">🔒 Введіть пароль двофакторної авторизації</div>';
+  } else {
+    msg.innerHTML = `<div class="alert alert-error">❌ ${res.error}</div>`;
+  }
+}
+
+function addAccountToUI(name) {
+  // Remove "no accounts" placeholder
+  const placeholder = document.getElementById('noAccounts');
+  if (placeholder) placeholder.remove();
+
+  // Add tag
+  const list = document.getElementById('accountList');
+  const tag = document.createElement('div');
+  tag.className = 'account-tag';
+  tag.id = `tag-${name}`;
+  tag.innerHTML = `<span class="account-dot"></span>${name}<span class="del" onclick="deleteAccount('${name}')">×</span>`;
+  list.appendChild(tag);
+
+  // Add option to select
+  const sel = document.getElementById('accountSelect');
+  const opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name;
+  sel.appendChild(opt);
+}
+
+async function deleteAccount(name) {
+  if (!confirm(`Видалити акаунт "${name}"?`)) return;
+  await fetch('/accounts/delete', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name})
+  });
+  document.getElementById(`tag-${name}`)?.remove();
+  const sel = document.getElementById('accountSelect');
+  for (const opt of sel.options) {
+    if (opt.value === name) { sel.removeChild(opt); break; }
+  }
+}
+
+// ─── Sheet Preview ──────────────────────────────────────────────────────────────
+
+async function loadPreview() {
+  const url = document.getElementById('sheetUrl').value.trim();
+  if (!url) { alert('Вставте посилання на таблицю'); return; }
+
+  const btn = document.getElementById('loadBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Завантажую...';
+
+  const res = await fetch('/preview', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({sheet_url: url})
+  }).then(r => r.json()).catch(() => ({success: false, error: 'Помилка з\'єднання'}));
+
+  btn.disabled = false;
+  btn.textContent = 'Завантажити';
+
+  if (!res.success) { alert('❌ ' + res.error); return; }
+
+  // Populate column selects
+  const uSel = document.getElementById('usernameCol');
+  const mSel = document.getElementById('messageCol');
+  uSel.innerHTML = '';
+  mSel.innerHTML = '';
+  res.columns.forEach(col => {
+    uSel.add(new Option(col, col));
+    mSel.add(new Option(col, col));
+  });
+
+  // Smart column detection
+  res.columns.forEach(col => {
+    const lc = col.toLowerCase();
+    if (lc.includes('user') || lc.includes('username') || lc.includes('telegram') || lc.includes('акк') || lc.includes('юзер')) uSel.value = col;
+    if (lc.includes('message') || lc.includes('msg') || lc.includes('повід') || lc.includes('текст') || lc.includes('text')) mSel.value = col;
+  });
+
+  // Render preview table
+  let html = '<table class="preview-table"><thead><tr>';
+  res.columns.forEach(c => html += `<th>${c}</th>`);
+  html += '</tr></thead><tbody>';
+  res.preview.forEach(row => {
+    html += '<tr>';
+    res.columns.forEach(c => html += `<td title="${row[c] ?? ''}">${row[c] ?? ''}</td>`);
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('previewTable').innerHTML = html;
+  document.getElementById('totalCount').textContent = `Всього контактів: ${res.total}`;
+  document.getElementById('previewSection').classList.remove('hidden');
+}
+
+// ─── Send ───────────────────────────────────────────────────────────────────────
+
+async function startSend() {
+  const account = document.getElementById('accountSelect').value;
+  const sheetUrl = document.getElementById('sheetUrl').value.trim();
+  const userCol = document.getElementById('usernameCol').value;
+  const msgCol = document.getElementById('messageCol').value;
+  const delay = document.getElementById('delay').value;
+
+  if (!account) { alert('Виберіть акаунт для відправки'); return; }
+  if (!sheetUrl) { alert('Вставте посилання на таблицю'); return; }
+  if (!userCol || !msgCol) { alert('Спочатку завантажте таблицю та виберіть колонки'); return; }
+
+  document.getElementById('doneAlert').classList.add('hidden');
+  document.getElementById('progressSection').classList.remove('hidden');
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('stopBtn').classList.remove('hidden');
+  document.getElementById('runningBadge').classList.remove('hidden');
+
+  const res = await fetch('/send', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      session_id: SESSION_ID,
+      account,
+      sheet_url: sheetUrl,
+      username_col: userCol,
+      message_col: msgCol,
+      delay
+    })
+  }).then(r => r.json()).catch(() => ({success: false, error: 'Помилка з\'єднання'}));
+
+  if (!res.success) {
+    alert('❌ ' + res.error);
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('stopBtn').classList.add('hidden');
+    document.getElementById('runningBadge').classList.add('hidden');
+    return;
+  }
+
+  statusInterval = setInterval(pollStatus, 2000);
+}
+
+async function stopSend() {
+  await fetch(`/stop/${SESSION_ID}`, {method: 'POST'});
+  clearInterval(statusInterval);
+  finishUI();
+}
+
+async function pollStatus() {
+  const s = await fetch(`/status/${SESSION_ID}`).then(r => r.json()).catch(() => null);
+  if (!s) return;
+
+  const pct = s.total > 0 ? Math.round((s.sent / s.total) * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressBadge').textContent = `${s.sent} / ${s.total}  (${pct}%)`;
+  document.getElementById('sendCurrent').textContent = s.current ? `✈️  Надсилаємо: ${s.current}` : '';
+
+  if (s.errors.length > 0) {
+    document.getElementById('errorBlock').classList.remove('hidden');
+    document.getElementById('errorItems').innerHTML = s.errors.map(e => `<div class="error-item">${e}</div>`).join('');
+  }
+
+  if (s.done || !s.running) {
+    clearInterval(statusInterval);
+    finishUI();
+    const errCount = s.errors.length;
+    const doneEl = document.getElementById('doneAlert');
+    doneEl.classList.remove('hidden');
+    doneEl.innerHTML = `<div class="alert alert-success">
+      ✅ Розсилку завершено! Надіслано: <strong>${s.sent} з ${s.total}</strong>
+      ${errCount > 0 ? ` · Помилок: <strong>${errCount}</strong>` : ' · Без помилок 🎉'}
+    </div>`;
+  }
+}
+
+function finishUI() {
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('stopBtn').classList.add('hidden');
+  document.getElementById('runningBadge').classList.add('hidden');
+  document.getElementById('sendCurrent').textContent = '';
+}
+</script>
+</body>
+</html>
