@@ -259,7 +259,7 @@ document.getElementById('sessionDisplay').textContent = SESSION_ID.slice(0, 8);
 let statusInterval = null;
 let currentAccName = '';
 
-// ─── Account Modal ──────────────────────────────────────────────────────────────
+// ─── Account Modal ────────────────────────────────────────────────────────
 
 function openModal() {
   document.getElementById('modalOverlay').classList.add('active');
@@ -376,7 +376,7 @@ async function deleteAccount(name) {
   }
 }
 
-// ─── Sheet Preview ──────────────────────────────────────────────────────────────
+// ─── Sheet Preview ────────────────────────────────────────────────────────
 
 async function loadPreview() {
   const url = document.getElementById('sheetUrl').value.trim();
@@ -429,7 +429,7 @@ async function loadPreview() {
   document.getElementById('previewSection').classList.remove('hidden');
 }
 
-// ─── Send ───────────────────────────────────────────────────────────────────────
+// ─── Send ─────────────────────────────────────────────────────────────────
 
 async function startSend() {
   const account = document.getElementById('accountSelect').value;
