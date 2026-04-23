@@ -101,8 +101,20 @@
       <p>Автоматична розсилка через особистий акаунт</p>
     </div>
   </div>
-  <div class="session-badge">
-    <span>Вкладка: </span><strong id="sessionDisplay"></strong>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div class="session-badge">
+      <span>Вкладка: </span><strong id="sessionDisplay"></strong>
+    </div>
+    <div class="session-badge" title="{{ user.email }}">
+      <span>👤 </span><strong>{{ user.name or user.email.split('@')[0] }}</strong>
+      {% if user.is_admin %}<span style="margin-left:6px;background:#fbbf24;color:#78350f;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:700">ADMIN</span>{% endif %}
+    </div>
+    {% if user.is_admin %}
+    <a href="{{ url_for('admin_invites') }}" class="session-badge" style="text-decoration:none;color:white">🎟 Інвайти</a>
+    {% endif %}
+    <form method="POST" action="{{ url_for('logout') }}" style="margin:0">
+      <button type="submit" class="session-badge" style="border:none;cursor:pointer;color:white;font-family:inherit">Вийти →</button>
+    </form>
   </div>
 </div>
 
